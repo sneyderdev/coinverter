@@ -2,12 +2,12 @@
 export default {
   quoteProps: "consistent",
   trailingComma: "es5",
-  plugins: ['prettier-plugin-astro'],
+  plugins: ["prettier-plugin-astro", "prettier-plugin-tailwindcss"],
   overrides: [
     {
-      files: '*.astro',
+      files: "*.astro",
       options: {
-        parser: 'astro',
+        parser: "astro",
       },
     },
   ],
