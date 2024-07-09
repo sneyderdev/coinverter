@@ -7,6 +7,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 ---
 
 <Card>
@@ -15,9 +17,18 @@ import {
     <CardDescription>Convert between currencies.</CardDescription>
   </CardHeader>
   <CardContent>
-    <p>Card Content</p>
+    <div class="grid gap-y-4">
+      <div class="grid w-full items-center gap-1.5">
+        <Label htmlFor="amount">Amount</Label>
+        <Input type="number" id="amount" min="0" />
+      </div>
+      <div class="grid w-full items-center gap-1.5">
+        <Label htmlFor="convertedTo">Converted to</Label>
+        <Input type="number" id="convertedTo" min="0" />
+      </div>
+    </div>
   </CardContent>
   <CardFooter>
-    <p>Card Footer</p>
+    <p class="text-xs">1 COP = X USD</p>
   </CardFooter>
 </Card>
