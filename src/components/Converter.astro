@@ -9,6 +9,18 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+
+interface Latest {
+  base: string;
+  date: string;
+  rates: Record<string, number>;
+}
+
+const response = await fetch(
+  `https://api.currencybeacon.com/v1/latest?api_key=${import.meta.env.API_KEY}&symbols=COP`
+);
+
+const data = (await response.json()) as Latest;
 ---
 
 <Card>
@@ -16,19 +28,51 @@ import { Label } from "@/components/ui/label";
     <CardTitle>Converter</CardTitle>
     <CardDescription>Convert between currencies.</CardDescription>
   </CardHeader>
-  <CardContent>
+  <CardContent id="latest" data-latest={JSON.stringify(data)}>
     <div class="grid gap-y-4">
       <div class="grid w-full items-center gap-1.5">
         <Label htmlFor="amount">Amount</Label>
-        <Input type="number" id="amount" min="0" />
+        <Input type="number" id="amount" min="0" defaultValue={1} />
       </div>
       <div class="grid w-full items-center gap-1.5">
         <Label htmlFor="convertedTo">Converted to</Label>
-        <Input type="number" id="convertedTo" min="0" />
+        <Input
+          type="number"
+          id="convertedTo"
+          min="0"
+          defaultValue={data.rates["COP"].toFixed(1)}
+        />
       </div>
     </div>
   </CardContent>
   <CardFooter>
-    <p class="text-xs">1 COP = X USD</p>
+    <p class="text-xs">1 USD = {data.rates["COP"]} COP</p>
   </CardFooter>
 </Card>
+
+<script>
+  import invariant from "tiny-invariant";
+
+  const latestElement = document.getElementById("latestasdsdsd");
+  invariant(latestElement, "Latest element not found");
+  invariant(latestElement.dataset.latest, "No latest data found");
+
+  const latest = JSON.parse(latestElement.dataset.latest);
+
+  const amount = document.getElementById("amount") as HTMLInputElement | null;
+  const convertedTo = document.getElementById(
+    "convertedTo"
+  ) as HTMLInputElement | null;
+  invariant(amount, "Amount input not found");
+  invariant(convertedTo, "Converted to input not found");
+
+  amount.addEventListener("input", (event) => {
+    const value = (event.target as HTMLInputElement).value;
+    convertedTo.value = (parseFloat(value) * latest.rates["COP"]).toFixed(1);
+  });
+
+  convertedTo.addEventListener("input", (event) => {
+    const value = (event.target as HTMLInputElement).value;
+    amount.value = (parseFloat(value) / latest.rates["COP"]).toFixed(1);
+  });
+</script>
