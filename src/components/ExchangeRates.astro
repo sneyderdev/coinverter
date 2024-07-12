@@ -1,4 +1,6 @@
 ---
+import dayjs from "dayjs";
+
 import {
   Card,
   CardContent,
@@ -8,6 +10,24 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Chart } from "@/components/Chart";
+
+import type { HistoricalResponse, Historical } from "@/types";
+
+const startDate = dayjs().subtract(1, "M").format("YYYY-MM-DD");
+const endDate = dayjs().format("YYYY-MM-DD");
+
+const response = await fetch(
+  `https://api.currencybeacon.com/v1/timeseries?api_key=${import.meta.env.API_KEY}&symbols=COP&start_date=${startDate}&end_date=${endDate}`
+);
+
+const data = (await response.json()) as HistoricalResponse;
+
+const historical: Historical = Object.entries(data.response).map(
+  ([date, { COP }]) => ({
+    date: dayjs(date).format("MMM D"),
+    rate: COP.toFixed(2),
+  })
+);
 ---
 
 <Card>
@@ -16,7 +36,7 @@ import { Chart } from "@/components/Chart";
     <CardDescription>Latest exchange rates.</CardDescription>
   </CardHeader>
   <CardContent>
-    <Chart client:visible />
+    <Chart client:load historical={historical} />
   </CardContent>
   <CardFooter>
     <p class="text-xs">Card Footer</p>
