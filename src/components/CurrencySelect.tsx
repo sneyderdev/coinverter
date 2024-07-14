@@ -8,31 +8,17 @@ import { DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { CommandDialog } from "@/components/ui/command";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 
-import type { CurrenciesResponse, Currency } from "@/types";
+import type { Currency } from "@/types";
 
 import { CurrencyList } from "./CurrencyList";
 
-export const CurrencySelect = () => {
+interface CurrencySelectProps {
+  currencies: Array<Currency>;
+}
+
+export const CurrencySelect = ({ currencies = [] }: CurrencySelectProps) => {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState("");
-  const [currencies, setCurrencies] = React.useState<Array<Currency>>([]);
-
-  React.useEffect(() => {
-    const getCurrencies = async () => {
-      const data = await fetch(
-        `https://api.currencybeacon.com/v1/currencies?api_key=${import.meta.env.PUBLIC_API_KEY}&type=fiat`
-      ).then((response) => response.json() as Promise<CurrenciesResponse>);
-
-      setCurrencies(
-        data.response.map((currency) => ({
-          short_code: currency.short_code,
-          name: currency.name,
-        }))
-      );
-    };
-
-    getCurrencies();
-  }, []);
 
   const isDesktop = useMediaQuery("(min-width: 768px)");
 

@@ -11,17 +11,25 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CurrencySelect } from "./CurrencySelect";
 
+import type { CurrenciesResponse } from "@/types";
+
 interface Latest {
   base: string;
   date: string;
   rates: Record<string, number>;
 }
 
-const response = await fetch(
+const latestResponse = await fetch(
   `https://api.currencybeacon.com/v1/latest?api_key=${import.meta.env.PUBLIC_API_KEY}&symbols=COP`
 );
 
-const data = (await response.json()) as Latest;
+const latest = (await latestResponse.json()) as Latest;
+
+const currenciesResponse = await fetch(
+  `https://api.currencybeacon.com/v1/currencies?api_key=${import.meta.env.PUBLIC_API_KEY}&type=fiat`
+);
+
+const currencies = (await currenciesResponse.json()) as CurrenciesResponse;
 ---
 
 <Card>
@@ -29,13 +37,16 @@ const data = (await response.json()) as Latest;
     <CardTitle>Converter</CardTitle>
     <CardDescription>Convert between currencies.</CardDescription>
   </CardHeader>
-  <CardContent id="latest" data-latest={JSON.stringify(data)}>
+  <CardContent id="latest" data-latest={JSON.stringify(latest)}>
     <div class="grid gap-y-4">
       <div class="grid w-full items-center gap-1.5">
         <Label htmlFor="amount">Amount</Label>
         <div class="flex flex-col gap-2 sm:flex-row">
           <Input type="number" id="amount" min="0" defaultValue={1} />
-          <CurrencySelect client:load />
+          <CurrencySelect
+            currencies={currencies.response}
+            client:only="react"
+          />
         </div>
       </div>
       <div class="grid w-full items-center gap-1.5">
@@ -45,15 +56,15 @@ const data = (await response.json()) as Latest;
             type="number"
             id="convertedTo"
             min="0"
-            defaultValue={data.rates["COP"].toFixed(1)}
+            defaultValue={latest.rates["COP"].toFixed(1)}
           />
-          <CurrencySelect client:load />
+          <!-- <CurrencySelect currencies={currencies.response} client:load /> -->
         </div>
       </div>
     </div>
   </CardContent>
   <CardFooter>
-    <p class="text-xs">1 USD = {data.rates["COP"]} COP</p>
+    <p class="text-xs">1 USD = {latest.rates["COP"]} COP</p>
   </CardFooter>
 </Card>
 
