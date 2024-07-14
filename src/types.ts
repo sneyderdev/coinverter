@@ -18,7 +18,7 @@ export interface Converter {
 export interface HistoricalResponse {
   response: {
     [key: string]: {
-      COP: number;
+      [key: string]: number;
     };
   };
 }

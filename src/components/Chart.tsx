@@ -1,4 +1,10 @@
+import * as React from "react";
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import { useStore } from "@nanostores/react";
+
+import { $converter } from "@/store";
+
+import { updateHistorical } from "@/scripts/api";
 
 import {
   type ChartConfig,
@@ -21,9 +27,19 @@ interface ChartProps {
 }
 
 export const Chart = ({ historical }: ChartProps) => {
+  const [chartData, setChartData] = React.useState<Historical>(historical);
+
+  const converter = useStore($converter);
+
+  React.useEffect(() => {
+    updateHistorical(converter.base, converter.symbol.code).then((data) => {
+      setChartData(data);
+    });
+  }, [converter]);
+
   return (
     <ChartContainer config={chartConfig} className="aspect-auto h-80 w-full">
-      <AreaChart accessibilityLayer data={historical}>
+      <AreaChart accessibilityLayer data={chartData}>
         <CartesianGrid vertical={false} />
         <XAxis
           dataKey="date"
