@@ -24,10 +24,10 @@ export const CurrencyList = ({ currencies, onSelect }: CurrencyListProps) => {
           {currencies.map((currency) => (
             <CommandItem
               key={currency.short_code}
-              value={currency.name}
+              value={currency.short_code}
               onSelect={onSelect}
             >
-              {currency.name}
+              {currency.short_code} - {currency.name}
             </CommandItem>
           ))}
         </CommandGroup>

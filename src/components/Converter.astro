@@ -1,4 +1,6 @@
 ---
+import { BASE_URL } from "@/scripts/api";
+
 import {
   Card,
   CardContent,
@@ -11,22 +13,25 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CurrencySelect } from "./CurrencySelect";
 
-import type { CurrenciesResponse } from "@/types";
+import type { CurrenciesResponse, ConverterResponse, Converter } from "@/types";
 
-interface Latest {
-  base: string;
-  date: string;
-  rates: Record<string, number>;
-}
-
-const latestResponse = await fetch(
-  `https://api.currencybeacon.com/v1/latest?api_key=${import.meta.env.PUBLIC_API_KEY}&symbols=COP`
+const converterResponse = await fetch(
+  `${BASE_URL}/latest?api_key=${import.meta.env.PUBLIC_API_KEY}&symbols=COP`
 );
 
-const latest = (await latestResponse.json()) as Latest;
+const data = (await converterResponse.json()) as ConverterResponse;
+
+const converter: Converter = {
+  base: data.response.base,
+  symbol: {
+    code: "COP",
+    rate: data.response.rates["COP"],
+  },
+  date: data.response.date,
+};
 
 const currenciesResponse = await fetch(
-  `https://api.currencybeacon.com/v1/currencies?api_key=${import.meta.env.PUBLIC_API_KEY}&type=fiat`
+  `${BASE_URL}/currencies?api_key=${import.meta.env.PUBLIC_API_KEY}&type=fiat`
 );
 
 const currencies = (await currenciesResponse.json()) as CurrenciesResponse;
@@ -37,60 +42,36 @@ const currencies = (await currenciesResponse.json()) as CurrenciesResponse;
     <CardTitle>Converter</CardTitle>
     <CardDescription>Convert between currencies.</CardDescription>
   </CardHeader>
-  <CardContent id="latest" data-latest={JSON.stringify(latest)}>
+  <CardContent id="converter" data-data={JSON.stringify(converter)}>
     <div class="grid gap-y-4">
       <div class="grid w-full items-center gap-1.5">
         <Label htmlFor="amount">Amount</Label>
         <div class="flex flex-col gap-2 sm:flex-row">
-          <Input type="number" id="amount" min="0" defaultValue={1} />
+          <Input type="number" id="amount" min="0" />
           <CurrencySelect
+            id="base"
             currencies={currencies.response}
             client:only="react"
           />
         </div>
       </div>
       <div class="grid w-full items-center gap-1.5">
-        <Label htmlFor="convertedTo">Converted to</Label>
+        <Label htmlFor="converted_to">Converted to</Label>
         <div class="flex flex-col gap-2 sm:flex-row">
-          <Input
-            type="number"
-            id="convertedTo"
-            min="0"
-            defaultValue={latest.rates["COP"].toFixed(1)}
+          <Input type="number" id="converted_to" min="0" />
+          <CurrencySelect
+            id="symbol"
+            currencies={currencies.response}
+            client:only="react"
           />
-          <!-- <CurrencySelect currencies={currencies.response} client:load /> -->
         </div>
       </div>
     </div>
   </CardContent>
-  <CardFooter>
-    <p class="text-xs">1 USD = {latest.rates["COP"]} COP</p>
+  <CardFooter className="grid text-xs">
+    <span id="exchange_rate"></span>
+    <span id="updated_date"></span>
   </CardFooter>
 </Card>
 
-<script>
-  import invariant from "tiny-invariant";
-
-  const latestElement = document.getElementById("latest");
-  invariant(latestElement, "Latest element not found");
-  invariant(latestElement.dataset.latest, "No latest data found");
-
-  const latest = JSON.parse(latestElement.dataset.latest);
-
-  const amount = document.getElementById("amount") as HTMLInputElement | null;
-  const convertedTo = document.getElementById(
-    "convertedTo"
-  ) as HTMLInputElement | null;
-  invariant(amount, "Amount input not found");
-  invariant(convertedTo, "Converted to input not found");
-
-  amount.addEventListener("input", (event) => {
-    const value = (event.target as HTMLInputElement).value;
-    convertedTo.value = (parseFloat(value) * latest.rates["COP"]).toFixed(1);
-  });
-
-  convertedTo.addEventListener("input", (event) => {
-    const value = (event.target as HTMLInputElement).value;
-    amount.value = (parseFloat(value) / latest.rates["COP"]).toFixed(1);
-  });
-</script>
+<script src="../scripts/converter.ts"></script>
