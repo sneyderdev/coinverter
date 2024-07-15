@@ -11,7 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Chart } from "@/components/Chart";
+import { HistoricalChart } from "@/components/HistoricalChart";
 
 import type { HistoricalResponse } from "@/types";
 
@@ -29,10 +29,12 @@ const historical = getHistorical(data.response, "COP");
     <CardTitle>Exchange Rates</CardTitle>
     <CardDescription>Latest exchange rates.</CardDescription>
   </CardHeader>
-  <CardContent>
-    <Chart client:load historical={historical} />
+  <CardContent id="historical" data-historical={JSON.stringify(historical)}>
+    <HistoricalChart client:load />
   </CardContent>
   <CardFooter>
     <p class="text-xs">Card Footer</p>
   </CardFooter>
 </Card>
+
+<script src="../scripts/historical.ts"></script>

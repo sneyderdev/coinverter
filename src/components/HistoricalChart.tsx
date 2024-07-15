@@ -1,10 +1,7 @@
-import * as React from "react";
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { useStore } from "@nanostores/react";
 
-import { $converter } from "@/store";
-
-import { updateHistorical } from "@/scripts/api";
+import { $historical } from "@/store";
 
 import {
   type ChartConfig,
@@ -13,8 +10,6 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 
-import type { Historical } from "@/types";
-
 const chartConfig = {
   rate: {
     label: "Price",
@@ -22,24 +17,12 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-interface ChartProps {
-  historical: Historical;
-}
-
-export const Chart = ({ historical }: ChartProps) => {
-  const [chartData, setChartData] = React.useState<Historical>(historical);
-
-  const converter = useStore($converter);
-
-  React.useEffect(() => {
-    updateHistorical(converter.base, converter.symbol.code).then((data) => {
-      setChartData(data);
-    });
-  }, [converter]);
+export const HistoricalChart = () => {
+  const historical = useStore($historical);
 
   return (
     <ChartContainer config={chartConfig} className="aspect-auto h-80 w-full">
-      <AreaChart accessibilityLayer data={chartData}>
+      <AreaChart accessibilityLayer data={historical}>
         <CartesianGrid vertical={false} />
         <XAxis
           dataKey="date"

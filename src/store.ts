@@ -1,6 +1,6 @@
 import { atom } from "nanostores";
 
-import type { Converter } from "@/types";
+import type { Converter, Historical } from "@/types";
 
 export const $converter = atom<Converter>({
   base: "USD",
@@ -10,3 +10,5 @@ export const $converter = atom<Converter>({
   },
   date: "",
 });
+
+export const $historical = atom<Historical>([]);
