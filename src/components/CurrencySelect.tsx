@@ -40,7 +40,7 @@ export const CurrencySelect = ({ id, currencies }: CurrencySelectProps) => {
       <div>
         <Button
           variant="outline"
-          className="w-[200px] justify-between"
+          className="xs:w-40 justify-between"
           onClick={() => setOpen(true)}
         >
           {value
@@ -62,7 +62,7 @@ export const CurrencySelect = ({ id, currencies }: CurrencySelectProps) => {
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
-        <Button variant="outline" className="w-[200px] justify-between">
+        <Button variant="outline" className="xs:w-40 justify-between">
           {value
             ? currencies.find((currency) => currency.short_code === value)
                 ?.short_code

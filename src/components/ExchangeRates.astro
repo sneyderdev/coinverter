@@ -1,4 +1,6 @@
 ---
+import { Info, Calendar } from "lucide-react";
+
 import { BASE_URL, START_DATE, END_DATE } from "@/scripts/api";
 
 import { getHistorical } from "@/lib/utils";
@@ -32,8 +34,21 @@ const historical = getHistorical(data.response, "COP");
   <CardContent id="historical" data-historical={JSON.stringify(historical)}>
     <HistoricalChart client:load />
   </CardContent>
-  <CardFooter>
-    <p class="text-xs">Card Footer</p>
+  <CardFooter
+    className="flex-col items-start gap-y-2 text-xs italic text-muted-foreground sm:flex-row sm:justify-between"
+  >
+    <p class="flex gap-x-1">
+      <Info size={16} />
+      Data provided by <a
+        href="https://currencybeacon.com"
+        target="_blank"
+        class="text-ring hover:underline">CurrencyBeacon API</a
+      >
+    </p>
+    <div class="flex items-center gap-x-1">
+      <Calendar size={16} />
+      <p>Last updated: <span id="updated_date"></span></p>
+    </div>
   </CardFooter>
 </Card>
 

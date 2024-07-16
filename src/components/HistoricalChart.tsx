@@ -1,7 +1,9 @@
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { useStore } from "@nanostores/react";
 
-import { $historical } from "@/store";
+import { useMediaQuery } from "@/hooks/use-media-query";
+
+import { $historical, $converter } from "@/store";
 
 import {
   type ChartConfig,
@@ -13,35 +15,41 @@ import {
 const chartConfig = {
   rate: {
     label: "Price",
-    color: "hsl(var(--chart-3))",
+    color: "hsl(var(--chart-1))",
   },
 } satisfies ChartConfig;
 
 export const HistoricalChart = () => {
   const historical = useStore($historical);
 
+  const isMobile = useMediaQuery("(min-width: 425px)");
+
   return (
-    <ChartContainer config={chartConfig} className="aspect-auto h-80 w-full">
-      <AreaChart accessibilityLayer data={historical}>
+    <ChartContainer config={chartConfig} className="aspect-auto h-96 w-full">
+      <AreaChart accessibilityLayer data={historical} width={768}>
         <CartesianGrid vertical={false} />
         <XAxis
           dataKey="date"
           tickLine={false}
           tickMargin={8}
           minTickGap={216}
+          className="xs:text-xs text-[10px]"
         />
         <YAxis
           dataKey="rate"
+          width={isMobile ? 40 : 34}
           tickLine={false}
           axisLine={false}
           tickFormatter={(value: number) =>
             value.toLocaleString("en-US", {
               style: "currency",
-              currency: "USD",
+              currency: $converter.get().symbol.code,
+              currencyDisplay: "narrowSymbol",
               trailingZeroDisplay: "stripIfInteger",
             })
           }
           domain={["auto", "auto"]}
+          className="xs:text-xs text-[10px]"
         />
         <ChartTooltip content={<ChartTooltipContent indicator="line" />} />
         <defs>
