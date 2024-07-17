@@ -25,8 +25,6 @@ const updatedDateLoaderEl = document.getElementById("updated_date_loader");
 invariant(updatedDateLoaderEl, "Updated date loader element not found");
 
 $requestStatus.subscribe((status) => {
-  console.log(status);
-
   if (status === "loading") {
     fromEl.disabled = true;
     toEl.disabled = true;
