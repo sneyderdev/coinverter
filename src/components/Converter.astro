@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Skeleton } from "@/components//ui/skeleton";
 import { CurrencySelect } from "./CurrencySelect";
 
 import type { CurrenciesResponse, ConverterResponse, Converter } from "@/types";
@@ -48,7 +49,7 @@ const currencies = (await currenciesResponse.json()) as CurrenciesResponse;
     <div class="grid gap-y-4">
       <div class="grid w-full items-center gap-1.5">
         <Label htmlFor="from">From</Label>
-        <div class="xs:flex-row flex flex-col gap-2">
+        <div class="flex flex-col gap-2 xs:flex-row">
           <Input type="number" id="from" min="0" />
           <CurrencySelect
             id="base"
@@ -59,7 +60,7 @@ const currencies = (await currenciesResponse.json()) as CurrenciesResponse;
       </div>
       <div class="grid w-full items-center gap-1.5">
         <Label htmlFor="to">To</Label>
-        <div class="xs:flex-row flex flex-col gap-2">
+        <div class="flex flex-col gap-2 xs:flex-row">
           <Input type="number" id="to" min="0" />
           <CurrencySelect
             id="symbol"
@@ -73,6 +74,7 @@ const currencies = (await currenciesResponse.json()) as CurrenciesResponse;
   <CardFooter className="gap-x-1 text-xs text-muted-foreground">
     <ArrowRightLeft size={16} />
     <span id="exchange_rate"></span>
+    <Skeleton id="exchange_rate_loader" className="hidden h-4 w-40" />
   </CardFooter>
 </Card>
 

@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 
-import { $converter, $historical } from "@/store";
+import { $converter, $historical, $requestStatus } from "@/store";
 
 import { getHistorical } from "@/lib/utils";
 
@@ -10,50 +10,41 @@ export const BASE_URL = "https://api.currencybeacon.com/v1";
 export const START_DATE = dayjs().subtract(1, "M").format("YYYY-MM-DD");
 export const END_DATE = dayjs().format("YYYY-MM-DD");
 
-export const updateHistorical = async (base: string, symbol: string) => {
-  const response = await fetch(
-    `${BASE_URL}/timeseries?base=${base}&symbol=${symbol}&api_key=${import.meta.env.PUBLIC_API_KEY}&start_date=${START_DATE}&end_date=${END_DATE}`
-  );
+export const updateData = async (type: "base" | "symbol", value: string) => {
+  try {
+    $requestStatus.set("loading");
 
-  const data = (await response.json()) as HistoricalResponse;
+    const base = type === "base" ? value : $converter.get().base;
+    const symbol = type === "symbol" ? value : $converter.get().symbol.code;
 
-  $historical.set(getHistorical(data.response, symbol));
-};
+    const [converterResponse, historicalResponse] = await Promise.all([
+      fetch(
+        `${BASE_URL}/latest?base=${base}&api_key=${import.meta.env.PUBLIC_API_KEY}&symbols=${symbol}`
+      ),
+      fetch(
+        `${BASE_URL}/timeseries?base=${base}&symbol=${symbol}&api_key=${import.meta.env.PUBLIC_API_KEY}&start_date=${START_DATE}&end_date=${END_DATE}`
+      ),
+    ]);
 
-export const updateBase = async (value: string) => {
-  const response = await fetch(
-    `${BASE_URL}/latest?base=${value}&api_key=${import.meta.env.PUBLIC_API_KEY}&symbols=${$converter.get().symbol.code}`
-  );
+    const converterData = (await converterResponse.json()) as ConverterResponse;
+    const historicalData =
+      (await historicalResponse.json()) as HistoricalResponse;
 
-  const data = (await response.json()) as ConverterResponse;
+    $converter.set({
+      base,
+      symbol: {
+        code: symbol,
+        rate: converterData.response.rates[symbol],
+      },
+      date: converterData.response.date,
+    });
 
-  $converter.set({
-    base: data.response.base,
-    symbol: {
-      code: $converter.get().symbol.code,
-      rate: data.response.rates[$converter.get().symbol.code],
-    },
-    date: data.response.date,
-  });
+    $historical.set(getHistorical(historicalData.response, symbol));
 
-  updateHistorical(value, $converter.get().symbol.code);
-};
+    $requestStatus.set("success");
+  } catch (error) {
+    $requestStatus.set("error");
 
-export const updateSymbol = async (value: string) => {
-  const response = await fetch(
-    `${BASE_URL}/latest?base=${$converter.get().base}&api_key=${import.meta.env.PUBLIC_API_KEY}&symbols=${value}`
-  );
-
-  const data = (await response.json()) as ConverterResponse;
-
-  $converter.set({
-    base: data.response.base,
-    symbol: {
-      code: value,
-      rate: data.response.rates[value],
-    },
-    date: data.response.date,
-  });
-
-  updateHistorical($converter.get().base, value);
+    //TODO: Show toast
+  }
 };

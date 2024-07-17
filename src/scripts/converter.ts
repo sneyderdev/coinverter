@@ -1,9 +1,10 @@
 import invariant from "tiny-invariant";
-import dayjs from "dayjs";
 
 import { $converter } from "@/store";
 
 import type { Converter } from "@/types";
+
+import "./requestStatus";
 
 const converterEl = document.getElementById("converter");
 invariant(converterEl, "Converter element not found");

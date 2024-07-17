@@ -2,7 +2,6 @@
 import { Info, Calendar } from "lucide-react";
 
 import { BASE_URL, START_DATE, END_DATE } from "@/scripts/api";
-
 import { getHistorical } from "@/lib/utils";
 
 import {
@@ -14,6 +13,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { HistoricalChart } from "@/components/HistoricalChart";
+import { Skeleton } from "@/components//ui/skeleton";
 
 import type { HistoricalResponse } from "@/types";
 
@@ -29,7 +29,10 @@ const historical = getHistorical(data.response, "COP");
 <Card>
   <CardHeader>
     <CardTitle>Exchange Rates</CardTitle>
-    <CardDescription>Latest exchange rates.</CardDescription>
+    <CardDescription id="chart_description"
+      >Latest exchange rates for USD to COP.</CardDescription
+    >
+    <Skeleton id="chart_description_loader" className="hidden h-5 w-60" />
   </CardHeader>
   <CardContent id="historical" data-historical={JSON.stringify(historical)}>
     <HistoricalChart client:load />
@@ -47,7 +50,10 @@ const historical = getHistorical(data.response, "COP");
     </p>
     <div class="flex items-center gap-x-1">
       <Calendar size={16} />
-      <p>Last updated: <span id="updated_date"></span></p>
+      <p>
+        Last updated: <span id="updated_date"></span>
+        <Skeleton id="updated_date_loader" className="hidden h-4 w-28" />
+      </p>
     </div>
   </CardFooter>
 </Card>

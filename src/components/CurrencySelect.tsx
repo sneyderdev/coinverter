@@ -1,9 +1,10 @@
 import * as React from "react";
 import { ChevronsUpDown } from "lucide-react";
+import { useStore } from "@nanostores/react";
 
 import { useMediaQuery } from "@/hooks/use-media-query";
-
-import { updateBase, updateSymbol } from "@/scripts/api";
+import { updateData } from "@/scripts/api";
+import { $requestStatus } from "@/store";
 
 import { Button } from "@/components/ui/button";
 import { DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -29,19 +30,24 @@ export const CurrencySelect = ({ id, currencies }: CurrencySelectProps) => {
     setOpen(false);
 
     if (id === "base") {
-      return updateBase(value);
+      return updateData("base", value);
     }
 
-    updateSymbol(value);
+    updateData("symbol", value);
   }, []);
+
+  const requestStatus = useStore($requestStatus);
+
+  const disabled = requestStatus === "loading";
 
   if (isDesktop) {
     return (
       <div>
         <Button
           variant="outline"
-          className="xs:w-40 justify-between"
+          className="justify-between xs:w-40"
           onClick={() => setOpen(true)}
+          disabled={disabled}
         >
           {value
             ? currencies.find((currency) => currency.short_code === value)
@@ -62,7 +68,11 @@ export const CurrencySelect = ({ id, currencies }: CurrencySelectProps) => {
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
-        <Button variant="outline" className="xs:w-40 justify-between">
+        <Button
+          variant="outline"
+          className="justify-between xs:w-40"
+          disabled={disabled}
+        >
           {value
             ? currencies.find((currency) => currency.short_code === value)
                 ?.short_code
