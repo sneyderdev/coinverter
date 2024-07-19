@@ -1,7 +1,61 @@
-<header class="space-y-1 py-9">
-  <h1 class="text-2xl font-semibold leading-none tracking-tight">Coinverter</h1>
-  <p class="text-sm text-muted-foreground">
-    Welcome to Coinverter. Convert between currencies and stay updated with the
-    latest exchange rates. Start converting now!
-  </p>
+---
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { ThemeButton } from "@/components/ThemeButton";
+---
+
+<header class="relative flex justify-end py-3">
+  <ThemeToggle client:load />
+  <ThemeButton id="view_transition_button" />
 </header>
+
+<script is:inline>
+  const viewTransitionButtonEl = document.getElementById(
+    "view_transition_button"
+  );
+
+  if (!document.startViewTransition) {
+    viewTransitionButtonEl.style.display = "none";
+  }
+
+  viewTransitionButtonEl.addEventListener("click", () => {
+    if (!document.startViewTransition) return;
+
+    document.startViewTransition(() => {
+      const isDark = document.documentElement.classList.contains("dark");
+
+      document.documentElement.classList[isDark ? "remove" : "add"]("dark");
+    });
+  });
+</script>
+
+<style is:inline>
+  ::view-transition-group(root) {
+    animation-timing-function: ease-out;
+  }
+
+  ::view-transition-old(root),
+  .dark::view-transition-old(root) {
+    animation: none;
+  }
+
+  ::view-transition-new(root) {
+    mask: url("https://media.tenor.com/x7QG3N0bdXcAAAAi/taffy-taffy-coin.gif")
+      center / 0 no-repeat;
+    animation: scale 500ms;
+  }
+
+  @keyframes scale {
+    0% {
+      mask-size: 0;
+    }
+    10% {
+      mask-size: 15vmax;
+    }
+    90% {
+      mask-size: 15vmax;
+    }
+    100% {
+      mask-size: 200vmax;
+    }
+  }
+</style>
