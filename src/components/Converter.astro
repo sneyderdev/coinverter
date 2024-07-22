@@ -16,7 +16,12 @@ import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components//ui/skeleton";
 import { CurrencySelect } from "./CurrencySelect";
 
-import type { CurrenciesResponse, ConverterResponse, Converter } from "@/types";
+import type {
+  CurrenciesResponse,
+  ConverterResponse,
+  Converter,
+  Currency,
+} from "@/types";
 
 const converterResponse = await fetch(
   `${BASE_URL}/latest?api_key=${import.meta.env.PUBLIC_API_KEY}&symbols=COP`
@@ -37,7 +42,24 @@ const currenciesResponse = await fetch(
   `${BASE_URL}/currencies?api_key=${import.meta.env.PUBLIC_API_KEY}&type=fiat`
 );
 
-const currencies = (await currenciesResponse.json()) as CurrenciesResponse;
+const currenciesData = (await currenciesResponse.json()) as CurrenciesResponse;
+
+const currencies: Array<Currency> = currenciesData.response.map((currency) => {
+  const codesWithoutFlags = ["ANG", "XAF", "XCD", "XOF", "XPF"];
+
+  if (!codesWithoutFlags.includes(currency.short_code)) {
+    return {
+      name: currency.name,
+      short_code: currency.short_code,
+      flag: currency.short_code.toLowerCase().slice(0, 2),
+    };
+  }
+
+  return {
+    name: currency.name,
+    short_code: currency.short_code,
+  };
+});
 ---
 
 <Card>
@@ -53,7 +75,7 @@ const currencies = (await currenciesResponse.json()) as CurrenciesResponse;
           <Input type="number" id="from" min="0" />
           <CurrencySelect
             id="base"
-            currencies={currencies.response}
+            currencies={currencies}
             client:only="react"
           />
         </div>
@@ -64,7 +86,7 @@ const currencies = (await currenciesResponse.json()) as CurrenciesResponse;
           <Input type="number" id="to" min="0" />
           <CurrencySelect
             id="symbol"
-            currencies={currencies.response}
+            currencies={currencies}
             client:only="react"
           />
         </div>

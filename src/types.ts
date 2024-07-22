@@ -31,6 +31,7 @@ export type Historical = Array<{
 export interface Currency {
   short_code: string;
   name: string;
+  flag?: string;
 }
 
 export interface CurrenciesResponse {

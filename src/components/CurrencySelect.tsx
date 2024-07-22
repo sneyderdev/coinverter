@@ -14,6 +14,8 @@ import { CurrencyList } from "./CurrencyList";
 
 import type { Currency } from "@/types";
 
+const codesWithoutFlags = ["ANG", "XAF", "XCD", "XOF", "XPF"];
+
 interface CurrencySelectProps {
   id: "base" | "symbol";
   currencies: Array<Currency>;
@@ -49,10 +51,16 @@ export const CurrencySelect = ({ id, currencies }: CurrencySelectProps) => {
           onClick={() => setOpen(true)}
           disabled={disabled}
         >
-          {value
-            ? currencies.find((currency) => currency.short_code === value)
-                ?.short_code
-            : "Select currency..."}
+          <div className="flex items-center gap-x-2">
+            {codesWithoutFlags.includes(value) ? (
+              <img src="/globe.svg" alt={value} className="size-6" />
+            ) : (
+              <span
+                className={`fib fi-${value.toLowerCase().slice(0, 2)} fis inline-block size-6 rounded-full`}
+              ></span>
+            )}
+            {value}
+          </div>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
         <CommandDialog open={open} onOpenChange={setOpen}>
@@ -73,10 +81,16 @@ export const CurrencySelect = ({ id, currencies }: CurrencySelectProps) => {
           className="justify-between xs:w-40"
           disabled={disabled}
         >
-          {value
-            ? currencies.find((currency) => currency.short_code === value)
-                ?.short_code
-            : "Select currency..."}
+          <div className="flex items-center gap-x-2">
+            {codesWithoutFlags.includes(value) ? (
+              <img src="/globe.svg" alt={value} className="size-6" />
+            ) : (
+              <span
+                className={`fib fi-${value.toLowerCase().slice(0, 2)} fis inline-block size-6 rounded-full`}
+              ></span>
+            )}
+            {value}
+          </div>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </DrawerTrigger>
