@@ -1,7 +1,8 @@
 import * as React from "react";
+import { useVirtualizer } from "@tanstack/react-virtual";
 import invariant from "tiny-invariant";
 
-import { useVirtualizer } from "@tanstack/react-virtual";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 import {
   Command,
@@ -11,6 +12,7 @@ import {
   CommandInput,
   CommandItem,
 } from "@/components/ui/command";
+import { Flag } from "./Flag";
 
 import type { Currency } from "@/types";
 
@@ -23,10 +25,12 @@ export const CurrencyList = ({ currencies, onSelect }: CurrencyListProps) => {
   const [options, setOptions] = React.useState(currencies);
   const parentRef = React.useRef<HTMLDivElement>(null);
 
+  const isDesktop = useMediaQuery("(min-width: 768px)");
+
   const virtualizer = useVirtualizer({
     count: options.length,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 48,
+    estimateSize: () => (isDesktop ? 48 : 40),
     paddingStart: 8,
     paddingEnd: 8,
   });
@@ -81,17 +85,7 @@ export const CurrencyList = ({ currencies, onSelect }: CurrencyListProps) => {
                 onSelect={onSelect}
                 className="gap-x-2"
               >
-                {currency.flag ? (
-                  <span
-                    className={`fib fi-${currency.short_code.toLowerCase().slice(0, 2)} fis size-6 rounded-full`}
-                  ></span>
-                ) : (
-                  <img
-                    src="/globe.svg"
-                    alt={currency.name}
-                    className="size-6"
-                  />
-                )}
+                <Flag code={currency.short_code} />
                 {currency.short_code} - {currency.name}
               </CommandItem>
             );

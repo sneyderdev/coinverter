@@ -42,24 +42,7 @@ const currenciesResponse = await fetch(
   `${BASE_URL}/currencies?api_key=${import.meta.env.PUBLIC_API_KEY}&type=fiat`
 );
 
-const currenciesData = (await currenciesResponse.json()) as CurrenciesResponse;
-
-const currencies: Array<Currency> = currenciesData.response.map((currency) => {
-  const codesWithoutFlags = ["ANG", "XAF", "XCD", "XOF", "XPF"];
-
-  if (!codesWithoutFlags.includes(currency.short_code)) {
-    return {
-      name: currency.name,
-      short_code: currency.short_code,
-      flag: currency.short_code.toLowerCase().slice(0, 2),
-    };
-  }
-
-  return {
-    name: currency.name,
-    short_code: currency.short_code,
-  };
-});
+const currencies = (await currenciesResponse.json()) as CurrenciesResponse;
 ---
 
 <Card>
@@ -75,7 +58,7 @@ const currencies: Array<Currency> = currenciesData.response.map((currency) => {
           <Input type="number" id="from" min="0" />
           <CurrencySelect
             id="base"
-            currencies={currencies}
+            currencies={currencies.response}
             client:only="react"
           />
         </div>
@@ -86,7 +69,7 @@ const currencies: Array<Currency> = currenciesData.response.map((currency) => {
           <Input type="number" id="to" min="0" />
           <CurrencySelect
             id="symbol"
-            currencies={currencies}
+            currencies={currencies.response}
             client:only="react"
           />
         </div>
