@@ -16,7 +16,12 @@ import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components//ui/skeleton";
 import { CurrencySelect } from "./CurrencySelect";
 
-import type { CurrenciesResponse, ConverterResponse, Converter } from "@/types";
+import type {
+  CurrenciesResponse,
+  ConverterResponse,
+  Converter,
+  Currency,
+} from "@/types";
 
 const converterResponse = await fetch(
   `${BASE_URL}/latest?api_key=${import.meta.env.PUBLIC_API_KEY}&symbols=COP`
