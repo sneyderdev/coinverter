@@ -1,3 +1,5 @@
+import { cn } from "@/lib/utils";
+
 interface FlagProps {
   code: string;
 }
@@ -8,16 +10,13 @@ export const Flag = ({ code }: FlagProps) => {
   const flagCode = code.toLowerCase().slice(0, 2);
 
   return (
-    <>
-      {CURRENCY_CODES_WITHOUT_FLAGS.includes(code) ? (
-        <span className="inline-block size-6">
-          <img src="/globe.svg" alt={code} className="size-full" />
-        </span>
-      ) : (
-        <span
-          className={`fib fi-${flagCode} fis inline-block size-6 rounded-full`}
-        ></span>
+    <span
+      className={cn(
+        "inline-block size-6 rounded-full",
+        CURRENCY_CODES_WITHOUT_FLAGS.includes(code)
+          ? "flag-globe"
+          : `fib fi-${flagCode} fis`
       )}
-    </>
+    ></span>
   );
 };
