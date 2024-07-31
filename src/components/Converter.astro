@@ -1,7 +1,7 @@
 ---
 import { ArrowRightLeft } from "lucide-react";
 
-import { BASE_URL } from "@/scripts/api";
+import { GET } from "@/pages/api/currencies";
 
 import {
   Card,
@@ -16,33 +16,15 @@ import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components//ui/skeleton";
 import { CurrencySelect } from "./CurrencySelect";
 
-import type {
-  CurrenciesResponse,
-  ConverterResponse,
-  Converter,
-  Currency,
-} from "@/types";
+import type { Converter, Currency } from "@/types";
 
-const converterResponse = await fetch(
-  `${BASE_URL}/latest?api_key=${import.meta.env.PUBLIC_API_KEY}&symbols=COP`
+const defaultRatesResponse = await fetch(
+  new URL("/api/latest?symbol=COP", Astro.url)
 );
+const defaultRates = (await defaultRatesResponse.json()) as Converter;
 
-const data = (await converterResponse.json()) as ConverterResponse;
-
-const converter: Converter = {
-  base: data.response.base,
-  symbol: {
-    code: "COP",
-    rate: data.response.rates["COP"],
-  },
-  date: data.response.date,
-};
-
-const currenciesResponse = await fetch(
-  `${BASE_URL}/currencies?api_key=${import.meta.env.PUBLIC_API_KEY}&type=fiat`
-);
-
-const currencies = (await currenciesResponse.json()) as CurrenciesResponse;
+const currenciesResponse = await GET(Astro);
+const currencies = (await currenciesResponse.json()) as Array<Currency>;
 ---
 
 <Card>
@@ -50,7 +32,7 @@ const currencies = (await currenciesResponse.json()) as CurrenciesResponse;
     <CardTitle>Converter</CardTitle>
     <CardDescription>Convert between currencies.</CardDescription>
   </CardHeader>
-  <CardContent id="converter" data-data={JSON.stringify(converter)}>
+  <CardContent id="converter" data-data={JSON.stringify(defaultRates)}>
     <div class="grid gap-y-4">
       <div class="grid w-full items-center gap-1.5">
         <Label htmlFor="from">From</Label>
@@ -58,7 +40,7 @@ const currencies = (await currenciesResponse.json()) as CurrenciesResponse;
           <Input type="number" id="from" min="0" />
           <CurrencySelect
             id="base"
-            currencies={currencies.response}
+            currencies={currencies}
             client:only="react"
           />
         </div>
@@ -69,7 +51,7 @@ const currencies = (await currenciesResponse.json()) as CurrenciesResponse;
           <Input type="number" id="to" min="0" />
           <CurrencySelect
             id="symbol"
-            currencies={currencies.response}
+            currencies={currencies}
             client:only="react"
           />
         </div>

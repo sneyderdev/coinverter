@@ -1,7 +1,6 @@
 ---
 import { Info, Calendar } from "lucide-react";
 
-import { BASE_URL, START_DATE, END_DATE } from "@/scripts/api";
 import { getHistorical } from "@/lib/utils";
 
 import {
@@ -17,13 +16,10 @@ import { Skeleton } from "@/components//ui/skeleton";
 
 import type { HistoricalResponse } from "@/types";
 
-const response = await fetch(
-  `${BASE_URL}/timeseries?api_key=${import.meta.env.PUBLIC_API_KEY}&symbols=COP&start_date=${START_DATE}&end_date=${END_DATE}`
-);
+const response = await fetch(new URL("/api/timeseries?symbol=COP", Astro.url));
+const data = (await response.json()) as HistoricalResponse["response"];
 
-const data = (await response.json()) as HistoricalResponse;
-
-const historical = getHistorical(data.response, "COP");
+const historical = getHistorical(data, "COP");
 ---
 
 <Card>
