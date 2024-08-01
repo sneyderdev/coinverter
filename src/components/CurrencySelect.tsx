@@ -11,11 +11,11 @@ import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { SelectTrigger } from "./SelectTrigger";
 import { CurrencyList } from "./CurrencyList";
 
-import type { Currency } from "@/types";
+import type { Currencies } from "@/types/app";
 
 interface CurrencySelectProps {
   id: "base" | "symbol";
-  currencies: Array<Currency>;
+  currencies: Currencies;
 }
 
 export const CurrencySelect = ({ id, currencies }: CurrencySelectProps) => {

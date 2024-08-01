@@ -2,6 +2,7 @@
 import { ArrowRightLeft } from "lucide-react";
 
 import { GET } from "@/pages/api/currencies";
+import { isBadRequest } from "@/lib/utils";
 
 import {
   Card,
@@ -16,15 +17,25 @@ import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components//ui/skeleton";
 import { CurrencySelect } from "./CurrencySelect";
 
-import type { Converter, Currency } from "@/types";
+import type { Converter, Currencies, BadRequest } from "@/types/app";
 
 const defaultRatesResponse = await fetch(
   new URL("/api/latest?symbol=COP", Astro.url)
 );
-const defaultRates = (await defaultRatesResponse.json()) as Converter;
+const defaultRates = (await defaultRatesResponse.json()) as
+  | Converter
+  | BadRequest;
+
+if (isBadRequest(defaultRates)) {
+  throw new Error(defaultRates.error);
+}
 
 const currenciesResponse = await GET(Astro);
-const currencies = (await currenciesResponse.json()) as Array<Currency>;
+const currencies = (await currenciesResponse.json()) as Currencies | BadRequest;
+
+if (isBadRequest(currencies)) {
+  throw new Error(currencies.error);
+}
 ---
 
 <Card>

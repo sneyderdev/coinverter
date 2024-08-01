@@ -2,7 +2,7 @@ import invariant from "tiny-invariant";
 
 import { $converter } from "@/store";
 
-import type { Converter } from "@/types";
+import type { Converter } from "@/types/app";
 
 import "./requestStatus";
 

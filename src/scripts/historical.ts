@@ -3,7 +3,7 @@ import dayjs from "dayjs";
 
 import { $historical, $converter } from "@/store";
 
-import type { Historical } from "@/types";
+import type { Historical } from "@/types/app";
 
 import "./requestStatus";
 

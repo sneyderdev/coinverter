@@ -1,7 +1,7 @@
 ---
 import { Info, Calendar } from "lucide-react";
 
-import { getHistorical } from "@/lib/utils";
+import { isBadRequest, getHistorical } from "@/lib/utils";
 
 import {
   Card,
@@ -14,10 +14,14 @@ import {
 import { HistoricalChart } from "@/components/HistoricalChart";
 import { Skeleton } from "@/components//ui/skeleton";
 
-import type { HistoricalResponse } from "@/types";
+import type { RawHistorical, BadRequest } from "@/types/app";
 
 const response = await fetch(new URL("/api/timeseries?symbol=COP", Astro.url));
-const data = (await response.json()) as HistoricalResponse["response"];
+const data = (await response.json()) as RawHistorical | BadRequest;
+
+if (isBadRequest(data)) {
+  throw new Error(data.error);
+}
 
 const historical = getHistorical(data, "COP");
 ---

@@ -1,6 +1,6 @@
 import { atom } from "nanostores";
 
-import type { Converter, Historical } from "@/types";
+import type { Converter, Historical } from "@/types/app";
 
 export const $converter = atom<Converter>({
   base: "USD",

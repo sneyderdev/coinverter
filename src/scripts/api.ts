@@ -1,8 +1,7 @@
 import { $converter, $historical, $requestStatus } from "@/store";
+import { getHistorical, isBadRequest } from "@/lib/utils";
 
-import { getHistorical } from "@/lib/utils";
-
-import type { Converter, HistoricalResponse } from "@/types";
+import type { Converter, RawHistorical, BadRequest } from "@/types/app";
 
 export const updateData = async (type: "base" | "symbol", value: string) => {
   try {
@@ -16,9 +15,18 @@ export const updateData = async (type: "base" | "symbol", value: string) => {
       fetch(`/api/timeseries?base=${base}&symbol=${symbol}`),
     ]);
 
-    const rates = (await ratesResponse.json()) as Converter;
-    const historical =
-      (await historicalResponse.json()) as HistoricalResponse["response"];
+    const rates = (await ratesResponse.json()) as Converter | BadRequest;
+    const historical = (await historicalResponse.json()) as
+      | RawHistorical
+      | BadRequest;
+
+    if (isBadRequest(rates)) {
+      throw new Error(rates.error);
+    }
+
+    if (isBadRequest(historical)) {
+      throw new Error(historical.error);
+    }
 
     $converter.set(rates);
     $historical.set(getHistorical(historical, symbol));
