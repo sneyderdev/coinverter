@@ -3,6 +3,7 @@ import Container from "@/components/Cointainer.astro";
 import Header from "@/components/Header.astro";
 import Hero from "@/components/Hero.astro";
 import Footer from "@/components/Footer.astro";
+import { Toaster } from "@/components/ui/sonner";
 ---
 
 <html lang="en">
@@ -43,5 +44,6 @@ import Footer from "@/components/Footer.astro";
       <slot />
       <Footer />
     </Container>
+    <Toaster richColors closeButton client:load />
   </body>
 </html>

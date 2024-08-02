@@ -1,3 +1,5 @@
+import { toast } from "sonner";
+
 import { $converter, $historical, $requestStatus } from "@/store";
 import { getHistorical, isBadRequest } from "@/lib/utils";
 
@@ -33,8 +35,10 @@ export const updateData = async (type: "base" | "symbol", value: string) => {
 
     $requestStatus.set("success");
   } catch (error) {
-    $requestStatus.set("error");
+    toast.error((error as Error).message, {
+      duration: 10000,
+    });
 
-    //TODO: Show toast
+    $requestStatus.set("error");
   }
 };

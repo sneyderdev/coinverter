@@ -16,3 +16,5 @@ export const $historical = atom<Historical>([]);
 export const $requestStatus = atom<"idle" | "loading" | "success" | "error">(
   "idle"
 );
+
+export const $theme = atom<"light" | "dark" | "system">("system");

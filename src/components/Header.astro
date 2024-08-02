@@ -8,10 +8,15 @@ import { ThemeButton } from "@/components/ThemeButton";
   <ThemeButton id="view_transition_button" />
 </header>
 
-<script is:inline>
+<script>
+  import invariant from "tiny-invariant";
+
+  import { $theme } from "@/store";
+
   const viewTransitionButtonEl = document.getElementById(
     "view_transition_button"
   );
+  invariant(viewTransitionButtonEl, "view_transition_button not found");
 
   if (!document.startViewTransition) {
     viewTransitionButtonEl.style.display = "none";
@@ -23,6 +28,7 @@ import { ThemeButton } from "@/components/ThemeButton";
     document.startViewTransition(() => {
       const isDark = document.documentElement.classList.contains("dark");
 
+      $theme.set(isDark ? "light" : "dark");
       document.documentElement.classList[isDark ? "remove" : "add"]("dark");
     });
   });

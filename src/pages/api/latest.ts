@@ -11,7 +11,7 @@ export const GET: APIRoute = async ({ url }) => {
   if (!symbol) {
     return new Response(
       JSON.stringify({
-        error: "Failed to fetch /latest: Please provide a symbol",
+        error: "Failed to fetch /latest: Please provide a symbol.",
       }),
       {
         status: 400,

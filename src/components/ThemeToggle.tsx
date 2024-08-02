@@ -1,5 +1,7 @@
 import * as React from "react";
+import { useStore } from "@nanostores/react";
 
+import { $theme } from "@/store";
 import { cn } from "@/lib/utils";
 
 import {
@@ -12,15 +14,14 @@ import {
 import { ThemeButton } from "./ThemeButton";
 
 export const ThemeToggle = () => {
-  const [theme, setTheme] = React.useState<"light" | "dark" | "system">(
-    "light"
-  );
   const [supportsSViewTransition, setSupportsSViewTransition] =
     React.useState(false);
 
+  const theme = useStore($theme);
+
   React.useEffect(() => {
     const isDark = document.documentElement.classList.contains("dark");
-    setTheme(isDark ? "dark" : "light");
+    $theme.set(isDark ? "dark" : "light");
 
     setSupportsSViewTransition(!!document.startViewTransition);
   }, []);
@@ -39,13 +40,13 @@ export const ThemeToggle = () => {
         <ThemeButton className={cn(supportsSViewTransition && "hidden")} />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => setTheme("light")}>
+        <DropdownMenuItem onClick={() => $theme.set("light")}>
           Light
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("dark")}>
+        <DropdownMenuItem onClick={() => $theme.set("dark")}>
           Dark
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("system")}>
+        <DropdownMenuItem onClick={() => $theme.set("system")}>
           System
         </DropdownMenuItem>
       </DropdownMenuContent>
