@@ -4,6 +4,7 @@ import Header from "@/components/Header.astro";
 import Hero from "@/components/Hero.astro";
 import Footer from "@/components/Footer.astro";
 import { Toaster } from "@/components/ui/sonner";
+import { Background } from "@/components/Background";
 ---
 
 <html lang="en">
@@ -45,5 +46,6 @@ import { Toaster } from "@/components/ui/sonner";
       <Footer />
     </Container>
     <Toaster richColors closeButton client:load />
+    <Background client:load />
   </body>
 </html>
