@@ -1,0 +1,16 @@
+---
+import { TriangleAlert, Info } from "lucide-react";
+---
+
+<div
+  class="relative flex flex-col items-center gap-2 rounded bg-destructive p-2 font-mono text-sm text-destructive-foreground sm:flex-row"
+>
+  <TriangleAlert className="shrink-0" />
+  <p>
+    <slot />
+  </p>
+</div>
+<div class="mt-2 flex items-center gap-1 text-xs text-muted-foreground">
+  <Info size={16} />
+  <p>Hint: Please try refreshing the page again.</p>
+</div>

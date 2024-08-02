@@ -1,9 +1,6 @@
 ---
 import { Info, Calendar } from "lucide-react";
 
-import { BASE_URL, START_DATE, END_DATE } from "@/scripts/api";
-import { getHistorical } from "@/lib/utils";
-
 import {
   Card,
   CardContent,
@@ -14,48 +11,59 @@ import {
 } from "@/components/ui/card";
 import { HistoricalChart } from "@/components/HistoricalChart";
 import { Skeleton } from "@/components//ui/skeleton";
+import ErrorMessage from "./ErrorMessage.astro";
 
-import type { HistoricalResponse } from "@/types";
+import type { RawHistorical, BadRequest } from "@/types/app";
 
-const response = await fetch(
-  `${BASE_URL}/timeseries?api_key=${import.meta.env.PUBLIC_API_KEY}&symbols=COP&start_date=${START_DATE}&end_date=${END_DATE}`
-);
-
-const data = (await response.json()) as HistoricalResponse;
-
-const historical = getHistorical(data.response, "COP");
+const response = await fetch(new URL("/api/timeseries?symbol=COP", Astro.url));
+const data = (await response.json()) as RawHistorical | BadRequest;
 ---
 
 <Card>
   <CardHeader>
     <CardTitle>Exchange Rates</CardTitle>
-    <CardDescription id="chart_description"
-      >Latest exchange rates for USD to COP.</CardDescription
-    >
+    {
+      !("error" in data) && (
+        <CardDescription id="chart_description">
+          Latest exchange rates for USD to COP.
+        </CardDescription>
+      )
+    }
     <Skeleton id="chart_description_loader" className="hidden h-5 w-60" />
   </CardHeader>
-  <CardContent id="historical" data-historical={JSON.stringify(historical)}>
-    <HistoricalChart client:load />
+  <CardContent id="historical" data-data={JSON.stringify(data)}>
+    {
+      "error" in data ? (
+        <ErrorMessage>{data.error}</ErrorMessage>
+      ) : (
+        <HistoricalChart client:load />
+      )
+    }
   </CardContent>
-  <CardFooter
-    className="flex-col items-start gap-y-2 text-xs italic text-muted-foreground sm:flex-row sm:justify-between"
-  >
-    <p class="flex gap-x-1">
-      <Info size={16} />
-      Data provided by <a
-        href="https://currencybeacon.com"
-        target="_blank"
-        class="text-ring hover:underline">CurrencyBeacon API</a
-      >
-    </p>
-    <div class="flex items-center gap-x-1">
-      <Calendar size={16} />
-      <p>
-        Last updated: <span id="updated_date"></span>
-        <Skeleton id="updated_date_loader" className="hidden h-4 w-28" />
-      </p>
-    </div>
-  </CardFooter>
+  {
+    !("error" in data) && (
+      <CardFooter className="flex-col items-start gap-y-2 text-xs italic text-muted-foreground sm:flex-row sm:justify-between">
+        <p class="flex gap-x-1">
+          <Info size={16} />
+          Data provided by{" "}
+          <a
+            href="https://currencybeacon.com"
+            target="_blank"
+            class="text-ring hover:underline"
+          >
+            CurrencyBeacon API
+          </a>
+        </p>
+        <div class="flex items-center gap-x-1">
+          <Calendar size={16} />
+          <p>
+            Last updated: <span id="updated_date" />
+            <Skeleton id="updated_date_loader" className="hidden h-4 w-28" />
+          </p>
+        </div>
+      </CardFooter>
+    )
+  }
 </Card>
 
 <script src="../scripts/historical.ts"></script>

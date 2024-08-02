@@ -11,16 +11,17 @@ import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { SelectTrigger } from "./SelectTrigger";
 import { CurrencyList } from "./CurrencyList";
 
-import type { Currency } from "@/types";
+import type { Currencies } from "@/types/app";
 
 interface CurrencySelectProps {
   id: "base" | "symbol";
-  currencies: Array<Currency>;
+  currencies: Currencies;
 }
 
 export const CurrencySelect = ({ id, currencies }: CurrencySelectProps) => {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState(id === "base" ? "USD" : "COP");
+  const [prevValue, setPrevValue] = React.useState(value);
 
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
@@ -36,6 +37,16 @@ export const CurrencySelect = ({ id, currencies }: CurrencySelectProps) => {
   }, []);
 
   const requestStatus = useStore($requestStatus);
+
+  React.useEffect(() => {
+    if (requestStatus === "success") {
+      setPrevValue(value);
+    }
+
+    if (requestStatus === "error") {
+      setValue(prevValue);
+    }
+  }, [requestStatus, value, prevValue]);
 
   const disabled = requestStatus === "loading";
 

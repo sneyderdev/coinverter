@@ -1,14 +1,9 @@
-import dayjs from "dayjs";
+import { toast } from "sonner";
 
 import { $converter, $historical, $requestStatus } from "@/store";
+import { getHistorical, isBadRequest } from "@/lib/utils";
 
-import { getHistorical } from "@/lib/utils";
-
-import type { ConverterResponse, HistoricalResponse } from "@/types";
-
-export const BASE_URL = "https://api.currencybeacon.com/v1";
-export const START_DATE = dayjs().subtract(1, "M").format("YYYY-MM-DD");
-export const END_DATE = dayjs().format("YYYY-MM-DD");
+import type { Converter, RawHistorical, BadRequest } from "@/types/app";
 
 export const updateData = async (type: "base" | "symbol", value: string) => {
   try {
@@ -17,34 +12,33 @@ export const updateData = async (type: "base" | "symbol", value: string) => {
     const base = type === "base" ? value : $converter.get().base;
     const symbol = type === "symbol" ? value : $converter.get().symbol.code;
 
-    const [converterResponse, historicalResponse] = await Promise.all([
-      fetch(
-        `${BASE_URL}/latest?base=${base}&api_key=${import.meta.env.PUBLIC_API_KEY}&symbols=${symbol}`
-      ),
-      fetch(
-        `${BASE_URL}/timeseries?base=${base}&symbol=${symbol}&api_key=${import.meta.env.PUBLIC_API_KEY}&start_date=${START_DATE}&end_date=${END_DATE}`
-      ),
+    const [ratesResponse, historicalResponse] = await Promise.all([
+      fetch(`/api/latest?base=${base}&symbol=${symbol}`),
+      fetch(`/api/timeseries?base=${base}&symbol=${symbol}`),
     ]);
 
-    const converterData = (await converterResponse.json()) as ConverterResponse;
-    const historicalData =
-      (await historicalResponse.json()) as HistoricalResponse;
+    const rates = (await ratesResponse.json()) as Converter | BadRequest;
+    const historical = (await historicalResponse.json()) as
+      | RawHistorical
+      | BadRequest;
 
-    $converter.set({
-      base,
-      symbol: {
-        code: symbol,
-        rate: converterData.response.rates[symbol],
-      },
-      date: converterData.response.date,
-    });
+    if (isBadRequest(rates)) {
+      throw new Error(rates.error);
+    }
 
-    $historical.set(getHistorical(historicalData.response, symbol));
+    if (isBadRequest(historical)) {
+      throw new Error(historical.error);
+    }
+
+    $converter.set(rates);
+    $historical.set(getHistorical(historical, symbol));
 
     $requestStatus.set("success");
   } catch (error) {
-    $requestStatus.set("error");
+    toast.error((error as Error).message, {
+      duration: 10000,
+    });
 
-    //TODO: Show toast
+    $requestStatus.set("error");
   }
 };

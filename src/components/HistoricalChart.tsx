@@ -1,3 +1,4 @@
+import { toast } from "sonner";
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { useStore } from "@nanostores/react";
 
@@ -33,7 +34,7 @@ export const HistoricalChart = () => {
           tickLine={false}
           tickMargin={8}
           minTickGap={216}
-          className="xs:text-xs text-[10px]"
+          className="text-[10px] xs:text-xs"
         />
         <YAxis
           dataKey="rate"
@@ -49,7 +50,7 @@ export const HistoricalChart = () => {
             })
           }
           domain={["auto", "auto"]}
-          className="xs:text-xs text-[10px]"
+          className="text-[10px] xs:text-xs"
         />
         <ChartTooltip content={<ChartTooltipContent indicator="line" />} />
         <defs>

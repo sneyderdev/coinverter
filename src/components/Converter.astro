@@ -1,7 +1,7 @@
 ---
 import { ArrowRightLeft } from "lucide-react";
 
-import { BASE_URL } from "@/scripts/api";
+import { GET } from "@/pages/api/currencies";
 
 import {
   Card,
@@ -15,72 +15,79 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components//ui/skeleton";
 import { CurrencySelect } from "./CurrencySelect";
+import ErrorMessage from "./ErrorMessage.astro";
 
-import type {
-  CurrenciesResponse,
-  ConverterResponse,
-  Converter,
-  Currency,
-} from "@/types";
+import type { Converter, Currencies, BadRequest } from "@/types/app";
 
-const converterResponse = await fetch(
-  `${BASE_URL}/latest?api_key=${import.meta.env.PUBLIC_API_KEY}&symbols=COP`
+const defaultRatesResponse = await fetch(
+  new URL("/api/latest?symbol=COP", Astro.url)
 );
+const defaultRates = (await defaultRatesResponse.json()) as
+  | Converter
+  | BadRequest;
 
-const data = (await converterResponse.json()) as ConverterResponse;
-
-const converter: Converter = {
-  base: data.response.base,
-  symbol: {
-    code: "COP",
-    rate: data.response.rates["COP"],
-  },
-  date: data.response.date,
-};
-
-const currenciesResponse = await fetch(
-  `${BASE_URL}/currencies?api_key=${import.meta.env.PUBLIC_API_KEY}&type=fiat`
-);
-
-const currencies = (await currenciesResponse.json()) as CurrenciesResponse;
+const currenciesResponse = await GET(Astro);
+const currencies = (await currenciesResponse.json()) as Currencies | BadRequest;
 ---
 
 <Card>
   <CardHeader>
     <CardTitle>Converter</CardTitle>
-    <CardDescription>Convert between currencies.</CardDescription>
+    {
+      !("error" in defaultRates) && (
+        <CardDescription>Convert between currencies.</CardDescription>
+      )
+    }
   </CardHeader>
-  <CardContent id="converter" data-data={JSON.stringify(converter)}>
-    <div class="grid gap-y-4">
-      <div class="grid w-full items-center gap-1.5">
-        <Label htmlFor="from">From</Label>
-        <div class="flex flex-col gap-2 xs:flex-row">
-          <Input type="number" id="from" min="0" />
-          <CurrencySelect
-            id="base"
-            currencies={currencies.response}
-            client:only="react"
-          />
+  <CardContent id="converter" data-data={JSON.stringify(defaultRates)}>
+    {
+      "error" in defaultRates ? (
+        <ErrorMessage>{defaultRates.error}</ErrorMessage>
+      ) : (
+        <div class="grid gap-y-4">
+          <div class="grid w-full items-center gap-1.5">
+            <Label htmlFor="from">From</Label>
+            <div class="flex flex-col gap-2 xs:flex-row">
+              <Input type="number" id="from" min="0" />
+              {"error" in currencies ? (
+                <ErrorMessage>{currencies.error}</ErrorMessage>
+              ) : (
+                <CurrencySelect
+                  id="base"
+                  currencies={currencies}
+                  client:only="react"
+                />
+              )}
+            </div>
+          </div>
+          <div class="grid w-full items-center gap-1.5">
+            <Label htmlFor="to">To</Label>
+            <div class="flex flex-col gap-2 xs:flex-row">
+              <Input type="number" id="to" min="0" />
+              {"error" in currencies ? (
+                <ErrorMessage>{currencies.error}</ErrorMessage>
+              ) : (
+                <CurrencySelect
+                  id="symbol"
+                  currencies={currencies}
+                  client:only="react"
+                />
+              )}
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="grid w-full items-center gap-1.5">
-        <Label htmlFor="to">To</Label>
-        <div class="flex flex-col gap-2 xs:flex-row">
-          <Input type="number" id="to" min="0" />
-          <CurrencySelect
-            id="symbol"
-            currencies={currencies.response}
-            client:only="react"
-          />
-        </div>
-      </div>
-    </div>
+      )
+    }
   </CardContent>
-  <CardFooter className="gap-x-1 text-xs text-muted-foreground">
-    <ArrowRightLeft size={16} />
-    <span id="exchange_rate"></span>
-    <Skeleton id="exchange_rate_loader" className="hidden h-4 w-40" />
-  </CardFooter>
+  {
+    !("error" in defaultRates) && (
+      <CardFooter className="gap-x-1 text-xs text-muted-foreground">
+        <ArrowRightLeft size={16} />
+        <span id="exchange_rate" />
+        <Skeleton id="exchange_rate_loader" className="hidden h-4 w-40" />
+      </CardFooter>
+    )
+  }
 </Card>
 
 <script src="../scripts/converter.ts"></script>

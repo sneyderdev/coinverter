@@ -14,10 +14,10 @@ import {
 } from "@/components/ui/command";
 import { Flag } from "./Flag";
 
-import type { Currency } from "@/types";
+import type { Currencies } from "@/types/app";
 
 interface CurrencyListProps {
-  currencies: Array<Currency>;
+  currencies: Currencies;
   onSelect: (value: string) => void;
 }
 
