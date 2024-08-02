@@ -12,7 +12,10 @@ export const ThemeButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         variant="outline"
         size="icon"
-        className={cn("absolute right-0 top-3", className)}
+        className={cn(
+          "absolute right-0 top-3 duration-500 animate-in fade-in-0",
+          className
+        )}
         {...props}
       >
         <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />

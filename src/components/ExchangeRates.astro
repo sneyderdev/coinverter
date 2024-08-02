@@ -10,7 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { HistoricalChart } from "@/components/HistoricalChart";
-import { Skeleton } from "@/components//ui/skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 import ErrorMessage from "./ErrorMessage.astro";
 
 import type { RawHistorical, BadRequest } from "@/types/app";
@@ -49,7 +49,7 @@ const data = (await response.json()) as RawHistorical | BadRequest;
           <a
             href="https://currencybeacon.com"
             target="_blank"
-            class="text-ring hover:underline"
+            class="text-foreground hover:underline"
           >
             CurrencyBeacon API
           </a>

@@ -34,7 +34,7 @@ export const HistoricalChart = () => {
           tickLine={false}
           tickMargin={8}
           minTickGap={216}
-          className="text-[10px] xs:text-xs"
+          className="text-[10px] md:text-xs"
         />
         <YAxis
           dataKey="rate"
@@ -50,7 +50,7 @@ export const HistoricalChart = () => {
             })
           }
           domain={["auto", "auto"]}
-          className="text-[10px] xs:text-xs"
+          className="text-[10px] md:text-xs"
         />
         <ChartTooltip content={<ChartTooltipContent indicator="line" />} />
         <defs>

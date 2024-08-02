@@ -14,7 +14,12 @@ export const SelectTrigger = React.forwardRef<
   SelectTriggerProps
 >(({ value, ...props }, ref) => {
   return (
-    <Button ref={ref} variant="outline" className="justify-between" {...props}>
+    <Button
+      ref={ref}
+      variant="outline"
+      className="justify-between duration-300 animate-in fade-in-0"
+      {...props}
+    >
       <div className="flex items-center gap-x-2">
         <Flag code={value} />
         {value}
