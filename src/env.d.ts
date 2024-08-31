@@ -1,3 +1,4 @@
+/// <reference path="../.astro/types.d.ts" />
 /// <reference types="astro/client" />
 
 /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/ViewTransition) */
